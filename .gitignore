@@ -1,3 +1,4 @@
 *.o
 /m1-meshtastic.m1app
 _import.tgz
+firmware/*.bin
