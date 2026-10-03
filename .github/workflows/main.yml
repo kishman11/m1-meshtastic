@@ -1,0 +1,38 @@
+name: Build M1 App
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential
+
+      - name: Build Project
+        run: |
+          if [ -f "CMakeLists.txt" ]; then
+            cmake -B build -G Ninja
+            cmake --build build
+          elif [ -f "Makefile" ]; then
+            make
+          fi
+
+      - name: Upload Compiled .m1app Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-meshtastic-app
+          path: |
+            **/*.m1app
+            build/*.m1app
