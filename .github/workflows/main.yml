@@ -15,24 +15,24 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Build Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake ninja-build build-essential
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-      - name: Build Project
+      - name: Install PlatformIO
         run: |
-          if [ -f "CMakeLists.txt" ]; then
-            cmake -B build -G Ninja
-            cmake --build build
-          elif [ -f "Makefile" ]; then
-            make
-          fi
+          python -m pip install --upgrade pip
+          pip install platformio
 
-      - name: Upload Compiled .m1app Artifact
+      - name: Build with PlatformIO
+        run: pio run
+
+      - name: Upload Compiled .m1app
         uses: actions/upload-artifact@v4
         with:
           name: m1-meshtastic-app
           path: |
+            .pio/build/**/*.m1app
+            .pio/build/**/*.bin
             **/*.m1app
-            build/*.m1app
